@@ -6,9 +6,9 @@ def validate_password(m_pass):
 	real_m_pass_file.close()
 	if m_pass == real_m_pass:
 		print('Correct password!')
-		exit(0)
+		return
+	print('Incorrect password!')
+	exit(0)
 
-	print('Incorrect password')
-
-m_pass = input('Master password: ')
+m_pass = raw_input('Master password: ')
 validate_password(m_pass)
