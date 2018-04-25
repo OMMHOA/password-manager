@@ -3,48 +3,66 @@
 import hashlib,binascii
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
+a=b''
+b=b''
+c=b''
 
 def generate_key( password,salt, iter):
 
-    #mas konyvatarugyan azt csinaljak , valaszhatunk
-    key = binascii.hexlify(hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), iter))
     key2=binascii.hexlify(PBKDF2(password,salt))
 
     return key2
 
-def read_pass(source):
+def read_file(file):
 
-    with open('passwords/'+source, 'r') as file:
-        salt=file.readline().rstrip()
-        e_pass=file.readline()
+    with open('passwords/'+file, 'r') as f:
+        salt=f.readline().rstrip()
+        tag = f.readline().rstrip()
+        nonce = f.readline().rstrip()
+        e_pass=f.readline()
+    #print('Read\nsalt: ' + salt + '\ntag: ' + str(tag) + '\nnon: ' + str(nonce) + '\nepass: ' + str(e_pass))
+    return e_pass,salt,tag,(nonce)
 
-    print(salt+' '+e_pass)
+
+def write_file(file,salt,tag,nonce,e_pass):
+
+    #print('Write\nsalt: '+salt+'\ntag: '+str(tag)+'\nnon: '+str(nonce)+'\nepass: '+str(e_pass))
+    with open('passwords/'+file, 'w') as f:
+        f.write(salt)
+        f.write('\n')
+        f.write((tag).decode('unicode-escape'))
+        f.write('\n')
+        f.write((nonce).decode('unicode-escape'))
+        f.write('\n')
+        f.write((e_pass).decode('unicode-escape'))
 
     return e_pass, salt
 
+def generate_pass(a,A,num,spec,lenght):
 
-def write_pass(source,salt,e_pass):
+    #TODO generate password with parameters bool a-z,bool A-Z,bool number,bool spec,int length
 
-    with open('passwords/'+source, 'w') as file:
-        file.writelines(salt)
-        file.writelines(e_pass)
-
+    return "password"
 
 
-    return e_pass, salt
+def encrypt(key,password):
 
-
-def encrypt(k,p):
-
-    cipher = AES.new(k, AES.MODE_EAX)
+    cipher = AES.new(key, AES.MODE_EAX)
     nonce = cipher.nonce
 
     #return ciphertext, tag,nonce
-    ciphertext,tag=cipher.encrypt_and_digest(p)
-    return  (ciphertext,tag,nonce)
+    ciphertext,tag=cipher.encrypt_and_digest(password)
+
+    return  (tag,nonce,ciphertext)
 
 
 def decrypt(k,ciphertext,nonce,tag):
+
+    nonce=nonce.encode('ISO-8859-1')
+    tag = bytes(tag, 'ISO-8859-1')
+    ciphertext=bytes(ciphertext, 'ISO-8859-1')
+
+
 
     cipher = AES.new(k, AES.MODE_EAX, nonce=nonce)
     plaintext = cipher.decrypt(ciphertext)
@@ -59,40 +77,30 @@ def decrypt(k,ciphertext,nonce,tag):
 
 
 
-read_pass('master_password')
+def create_pass(file, m_pass):
 
-k=generate_key("password",'salt',1000)
+    salt='randomsalt'
+    iter=1000
+    key=generate_key(m_pass,salt,iter)
 
-p=b'googlepassword'
+    password=generate_pass(True,False,False,False,8)
+    tag,nonce,e_pass=encrypt(key, password.encode())
+    write_file(file, salt, tag,nonce,e_pass )
 
-
-#TODO tag nonce mire is valo, ki lehet e irni csak ugy
-(ciphertext, tag, nonce) = encrypt(k,p)
-
-print('cipherd'+str(ciphertext))
-
-password=decrypt(k,ciphertext,nonce,tag)
-
-print(password)
-
-    
-#m_pass = input('Master password: ')
-#asd=hashlib.pbkdf2_hmac('sha256', m_pass,b'pass',b'salt',1000)
-
-#validate_password(m_pass)
-
-'''
-def validate_password(m_pass):
+    print('Password Saved!')
 
 
-	real_m_pass_file = open('passwords/master_password', 'r')
-	real_m_pass = real_m_pass_file.readline()
-	real_m_pass_file.close()
-	asd=hashlib.pbkdf2_hmac('sha256', m_pass, b'pass', b'salt', 1000).decode()
+def read_pass(file,m_pass):
+    e_pass, salt, tag, nonce=read_file(file)
+    key=generate_key(m_pass,salt,tag)
 
-	if m_pass == real_m_pass:
-		print('Correct password!')
-		exit(0)
+    password=decrypt(key,e_pass,nonce,tag)
 
-	print('Incorrect password')
-'''
+    print(password)
+
+
+
+
+create_pass('facebook_user','master')
+
+read_pass('facebook_user','master')
