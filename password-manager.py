@@ -3,9 +3,6 @@
 import hashlib,binascii
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
-a=b''
-b=b''
-c=b''
 
 def generate_key( password,salt, iter):
 
@@ -49,8 +46,6 @@ def encrypt(key,password):
 
     cipher = AES.new(key, AES.MODE_EAX)
     nonce = cipher.nonce
-
-    #return ciphertext, tag,nonce
     ciphertext,tag=cipher.encrypt_and_digest(password)
 
     return  (tag,nonce,ciphertext)
