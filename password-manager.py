@@ -12,7 +12,7 @@ def generate_key( password,salt, iter):
 
 def read_file(file):
 
-    with open('passwords/'+file, 'r') as f:
+    with open('passwords/'+file, 'rb') as f:
         salt=f.readline().rstrip()
         tag = f.readline().rstrip()
         nonce = f.readline().rstrip()
@@ -24,14 +24,15 @@ def read_file(file):
 def write_file(file,salt,tag,nonce,e_pass):
 
     #print('Write\nsalt: '+salt+'\ntag: '+str(tag)+'\nnon: '+str(nonce)+'\nepass: '+str(e_pass))
-    with open('passwords/'+file, 'w') as f:
-        f.write(salt)
-        f.write('\n')
-        f.write((tag).decode('unicode-escape'))
-        f.write('\n')
-        f.write((nonce).decode('unicode-escape'))
-        f.write('\n')
-        f.write((e_pass).decode('unicode-escape'))
+    with open('passwords/'+file, 'wb') as f:
+        f.write(salt.encode())
+        f.write('\n'.encode())
+        print((tag).decode('cp437'))
+        f.write((tag))
+        f.write('\n'.encode())
+        f.write((nonce))
+        f.write('\n'.encode())
+        f.write((e_pass))
 
     return e_pass, salt
 
@@ -52,11 +53,11 @@ def encrypt(key,password):
 
 
 def decrypt(k,ciphertext,nonce,tag):
-
+    '''
     nonce=nonce.encode('ISO-8859-1')
     tag = bytes(tag, 'ISO-8859-1')
     ciphertext=bytes(ciphertext, 'ISO-8859-1')
-
+    '''
 
 
     cipher = AES.new(k, AES.MODE_EAX, nonce=nonce)
