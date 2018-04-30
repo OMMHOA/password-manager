@@ -2,6 +2,7 @@ import binascii
 
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
+from getpass import getpass
 
 
 def _write_pass(file, m_pass, get_password):
@@ -34,12 +35,12 @@ def _write_file(file, salt, tag, nonce, e_pass):
     with open('passwords/' + file, 'wb') as f:
         f.write(salt.encode())
         f.write('\n'.encode())
-        print((tag).decode('cp437'))
-        f.write((tag))
+        # print((tag).decode('cp437'))
+        f.write(tag)
         f.write('\n'.encode())
-        f.write((nonce))
+        f.write(nonce)
         f.write('\n'.encode())
-        f.write((e_pass))
+        f.write(e_pass)
 
     return e_pass, salt
 
@@ -68,15 +69,15 @@ class PasswordGenerator(AccountHandler):
 
 
 class PasswordWriter(AccountHandler):
-    def __init__(self, domain, username, password):
+    def __init__(self, domain, username):
         super().__init__(domain, username)
-        self.password = password
 
     def write_pass(self, m_pass):
-        _write_pass(self.file, m_pass, self.get_pass)
+        _write_pass(self.file, m_pass, self.__prompt_pass)
 
-    def get_pass(self):
-        return self.password
+    @staticmethod
+    def __prompt_pass():
+        return getpass('Password: ')
 
 
 class PasswordReader(AccountHandler):
