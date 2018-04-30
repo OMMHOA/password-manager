@@ -1,30 +1,103 @@
 #!/usr/bin/env python3
 
+import argparse
+import binascii
+import sys
 from getpass import getpass
-import argparse, sys
-import hashlib, binascii
-from Crypto.Protocol.KDF import PBKDF2
+
 from Crypto.Cipher import AES
+from Crypto.Protocol.KDF import PBKDF2
 
 
-# def get_parser():
-# 	# basic arguments
-# 	parser = argparse.ArgumentParser(prog='Password Manager')
-# 	parser.add_argument('domain', nargs='?')
-# 	parser.add_argument('username', nargs='?')
-# 	subparsers = parser.add_subparsers()
+def main():
+    args = parse_args()
+    master_password = getpass('Master password: ')
 
-# 	# subcommands
-# 	password_parser = subparsers.add_parser('add-pass')
-# 	password_parser.add_argument('-p', '-pass', metavar='PASSWORD', help='Use predefined password.',
-# 		required=True)
+    if len(args) > 0:
+        handle_args(args)
+    else:
+        shell_mode(master_password)
 
-# 	generate_parser = subparsers.add_parser('generate-pass')
-# 	generate_parser.add_argument('-x', metavar='DIFFICULTY', type=int, help='Set password difficulty. ' + 
-# 		'Can be 1-[a-zA-Z], 2-[a-zA-Z0-9],3-[a-zA-Z0-9]+special characters', required=True)
-# 	generate_parser.add_argument('-l', metavar='LENGTH', help='Set password length.', required=True)
 
-# 	return parser
+def parse_args():
+    parser = get_parser()
+    args = parser.parse_args()
+    return vars(args)
+
+
+def parse_command(cmd):
+    parser = get_parser()
+    split_command = cmd.split(' ')
+    args = parser.parse_args(split_command)
+    return vars(args)
+
+
+def get_parser():
+    # basic arguments
+    parser = argparse.ArgumentParser(prog='Password Manager')
+    subparsers = parser.add_subparsers()
+
+    # subcommands
+    password_parser = subparsers.add_parser('add')
+    add_account_info_to_parser(password_parser)
+
+    generate_parser = subparsers.add_parser('generate')
+    add_account_info_to_parser(generate_parser)
+    generate_parser.add_argument('-x', '--difficulty', metavar='DIFFICULTY', type=int, required=True,
+                                 choices=[1, 2, 3], help='Set password difficulty. ' +
+                                                         'Can be 1-[a-zA-Z], 2-[a-zA-Z0-9],3-[a-zA-Z0-9]')
+    generate_parser.add_argument('-l', '--length', metavar='LENGTH', type=int, required=True,
+                                 help='Set password length.')
+
+    return parser
+
+
+def add_account_info_to_parser(parser):
+    parser.add_argument('DOMAIN')
+    parser.add_argument('USERNAME')
+
+
+def handle_args(args):
+    print('There are some args')
+
+
+def exit(command, m_pass):
+    print('Goodbye!')
+    sys.exit(0)
+
+
+def add(command, m_pass):
+    print('add called')
+
+
+def generate(command, m_pass):
+    print('generate called')
+    create_pass('facebook_user', m_pass)
+
+
+def get(command, m_pass):
+    print('get called')
+    read_pass('facebook_user', m_pass)
+
+
+def print_wrong_command(wrong_command, m_pass):
+    print('Unrecognized command: %s' % wrong_command)
+
+
+actions = {
+    'exit': exit,
+    'add': add,
+    'generate': generate,
+    'get': get
+}
+
+
+def shell_mode(master_password):
+    print('You entered the shell. Write exit or press ctrl+C to exit!')
+    while True:
+        command = input()
+        actions.get(command, print_wrong_command)(command, master_password)
+
 
 def generate_key(password, salt, iter):
     key2 = binascii.hexlify(PBKDF2(password, salt))
@@ -111,44 +184,4 @@ def read_pass(file, m_pass):
     print(password)
 
 
-def validate_password(m_pass):
-    real_m_pass_file = open('passwords/master_password', 'r')
-    real_m_pass = real_m_pass_file.readline()
-    real_m_pass_file.close()
-    if m_pass == real_m_pass:
-        print('Correct password!')
-        return
-    print('Incorrect password!')
-    exit(0)
-
-
-def exit(command, m_pass):
-    print('Goodbye!')
-    sys.exit(0)
-
-
-def add(command, m_pass):
-    print('add called')
-    create_pass('facebook_user', m_pass)
-
-
-def get(command, m_pass):
-    print('get called')
-    read_pass('facebook_user', m_pass)
-
-
-def print_wrong_command(wrong_command):
-    print('Unrecognized command: %s' % wrong_command)
-
-
-actions = {
-    'exit': exit,
-    'add': add,
-    'get': get
-}
-
-m_pass = getpass('Master password: ')
-print('You entered the shell. Write exit or press ctrl+C to exit!')
-while True:
-    command = input()
-    actions.get(command, print_wrong_command)(command, m_pass)
+main()
