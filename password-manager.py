@@ -29,6 +29,7 @@ get_parser = subparsers.add_parser('get')
 add_account_info_to_parser(get_parser)
 
 subparsers.add_parser('list')
+subparsers.add_parser('clear')
 
 
 def main():
@@ -54,8 +55,10 @@ def execute_command(args, master_password):
 def shell_mode(master_password):
     print('You entered the shell. Write exit or press ctrl+C to exit!')
     while True:
-        command = input()
+        command = input('> ')
         handle_exit(command)
+        if command == '':
+            continue
         command = command.split()
         execute_command(command, master_password)
 
