@@ -34,12 +34,20 @@ subparsers.add_parser('clear')
 
 def main():
     args = argv[1:]
-    master_password = getpass('Master password: ')
+    master_password = get_master_password()
 
     if len(args) > 0:
         execute_command(args, master_password)
     else:
         shell_mode(master_password)
+
+
+def get_master_password():
+    master_password = ''
+    while master_password == '':
+        master_password = getpass('Master password: ')
+
+    return master_password
 
 
 def execute_command(args, master_password):
