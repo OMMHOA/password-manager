@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 from getpass import getpass
 from actions import actions
 from sys import exit, argv
+from os import path, mkdir
 
 
 def add_account_info_to_parser(parser):
@@ -35,6 +36,9 @@ subparsers.add_parser('clear')
 def main():
     args = argv[1:]
     master_password = get_master_password()
+
+    if not path.isdir('passwords'):
+        mkdir('passwords')
 
     if len(args) > 0:
         execute_command(args, master_password)
