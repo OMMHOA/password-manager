@@ -16,14 +16,10 @@ class Writer(ABC, AccountHandler):
     def write_pass(self, m_pass):
         password = self._get_password()
         tag, nonce, e_pass = self.__get_encrypted_message(password, m_pass)
-        file_tag, file_nonce, e_file = self.__get_encrypted_message(self.file, m_pass)
         try:
             self.__write_file(self.file, tag, nonce, e_pass)
-            self.__write_file('db', file_tag, file_nonce, e_file)
         except IOError:
             print('Failed to save password. Rolling back...')
-            self.__rollback()
-            print('Rollback done.')
             return
 
         print('Password Saved!')
@@ -54,22 +50,6 @@ class Writer(ABC, AccountHandler):
             f.write('\n'.encode())
             f.write(e_message)
             f.write('\n'.encode())
-
-    def __rollback(self):
-        os.remove('passwords/' + self.file)
-        self.__remove_from_db()
-
-    def __remove_from_db(self):
-        with open('passwords/db', 'rb+') as f:
-            db = f.readlines()
-            f.seek(0)
-            self.__write_if_not_file(db, f)
-            f.truncate()
-
-    def __write_if_not_file(self, db, open_file):
-        for i in db:
-            if i != self.file.encode():
-                open_file.write(i)
 
     @abstractmethod
     def _get_password(self):
