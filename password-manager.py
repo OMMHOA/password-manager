@@ -29,6 +29,9 @@ generate_parser.add_argument('-l', '--length', metavar='LENGTH', type=int, requi
 get_parser = subparsers.add_parser('get')
 add_account_info_to_parser(get_parser)
 
+delete_parser = subparsers.add_parser('delete')
+add_account_info_to_parser(delete_parser)
+
 subparsers.add_parser('list')
 subparsers.add_parser('clear')
 
@@ -61,7 +64,6 @@ def get_master_password():
 def execute_command(args, master_password):
     try:
         command_args = parser.parse_args(args)
-        print(command_args)
         command = args[0]
         actions[command](command_args, master_password)
     except SystemExit:

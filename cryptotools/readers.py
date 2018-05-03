@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 from cryptotools.common import AccountHandler, generate_key
 from os import listdir
 
+
 class Reader(ABC):
     @abstractmethod
     def read(self, m_pass):

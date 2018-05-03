@@ -82,3 +82,8 @@ class PasswordWriter(Writer):
 def clear():
     rmtree('passwords')
     os.mkdir('passwords')
+
+
+class PasswordDeleter(AccountHandler):
+    def delete(self):
+        os.remove('passwords/' + self.file)
