@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from Crypto.Cipher import AES
 
 from cryptotools.common import AccountHandler, generate_key
-
+from os import listdir
 
 class Reader(ABC):
     @abstractmethod
@@ -36,6 +36,9 @@ class PasswordReader(AccountHandler, Reader):
             return tuple(lines)
 
 
-class DbReader(Reader):
+class List(Reader):
     def read(self, m_pass):
-        print('List called')
+        print('domain: username')
+        for f in listdir('passwords'):
+            [domain, username] = f.split('__', 1)
+            print('%s: %s' % (domain, username))

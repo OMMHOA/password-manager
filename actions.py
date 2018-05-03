@@ -1,4 +1,4 @@
-from cryptotools.readers import PasswordReader, DbReader
+from cryptotools.readers import PasswordReader, List
 from cryptotools.writers import PasswordWriter, PasswordGenerator, clear
 
 
@@ -19,7 +19,7 @@ def _get(args, m_pass):
 
 def _list(args, m_pass):
     print('list called')
-    DbReader().read(m_pass)
+    List().read(m_pass)
 
 
 def _clear(args, m_pass):
