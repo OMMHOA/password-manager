@@ -12,12 +12,6 @@ class Reader(ABC):
 
     @staticmethod
     def _decrypt(k, ciphertext, nonce, tag):
-        '''
-        nonce=nonce.encode('ISO-8859-1')
-        tag = bytes(tag, 'ISO-8859-1')
-        ciphertext=bytes(ciphertext, 'ISO-8859-1')
-        '''
-
         cipher = AES.new(k, AES.MODE_EAX, nonce=nonce)
         plaintext = cipher.decrypt(ciphertext)
         try:
@@ -30,7 +24,6 @@ class Reader(ABC):
 class PasswordReader(AccountHandler, Reader):
     def read(self, m_pass):
         salt, tag, nonce, e_pass = self._read_file()
-        # print('Read\nsalt: ' + salt + '\ntag: ' + str(tag) + '\nnon: ' + str(nonce) + '\nepass: ' + str(e_pass))
         key = generate_key(m_pass, salt, tag)
 
         message = self._decrypt(key, e_pass, nonce, tag)
