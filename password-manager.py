@@ -36,6 +36,10 @@ subparsers.add_parser('clear')
 def main():
     args = argv[1:]
     master_password = get_master_password()
+    master_password_again = get_master_password()
+    if master_password != master_password_again:
+        print("Passwords don't match.")
+        exit(0)
 
     if not path.isdir('passwords'):
         mkdir('passwords')
