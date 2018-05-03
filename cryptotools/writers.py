@@ -3,6 +3,7 @@ from getpass import getpass
 from abc import ABC, abstractmethod
 from shutil import rmtree
 import os
+import crypt
 
 from cryptotools.common import AccountHandler, generate_key
 
@@ -10,7 +11,7 @@ from cryptotools.common import AccountHandler, generate_key
 class Writer(ABC, AccountHandler):
     def __init__(self, domain, username):
         super().__init__(domain, username)
-        self.salt = 'randomsalt'
+        self.salt = crypt.mksalt(crypt.METHOD_SHA512)
 
     def write_pass(self, m_pass):
         password = self._get_password()
