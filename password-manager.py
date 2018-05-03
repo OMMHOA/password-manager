@@ -22,7 +22,7 @@ generate_parser = subparsers.add_parser('generate')
 add_account_info_to_parser(generate_parser)
 generate_parser.add_argument('-x', '--difficulty', metavar='DIFFICULTY', type=int, required=True,
                              choices=[1, 2, 3], help='Set password difficulty. ' +
-                                                     'Can be 1-[a-zA-Z], 2-[a-zA-Z0-9],3-[a-zA-Z0-9]')
+                                                     'Can be 1-[a-zA-Z], 2-[a-zA-Z0-9],3-[a-zA-Z0-9]+special chars')
 generate_parser.add_argument('-l', '--length', metavar='LENGTH', type=int, required=True,
                              help='Set password length.')
 

@@ -1,7 +1,9 @@
 from Crypto.Cipher import AES
+from Crypto.Random.random import choice
 from getpass import getpass
 from abc import ABC, abstractmethod
 from shutil import rmtree
+from itertools import chain
 import os
 import crypt
 
@@ -49,7 +51,6 @@ class Writer(ABC, AccountHandler):
             f.write(nonce)
             f.write('\n'.encode())
             f.write(e_message)
-            f.write('\n'.encode())
 
     @abstractmethod
     def _get_password(self):
@@ -62,11 +63,19 @@ class PasswordGenerator(Writer):
         super().__init__(domain, username)
         self.difficulty = difficulty
         self.length = length
+        self.difficultyPool = {1: list(chain(self._range_between('a', 'z'), self._range_between('A', 'Z')))}
+        self.difficultyPool[2] = list(chain(self.difficultyPool[1], self._range_between('0', '9')))
+        self.difficultyPool[3] = list(chain(self.difficultyPool[2], self._range_between('!', '/')))
+
+    @staticmethod
+    def _range_between(first, last):
+        return range(ord(first), ord(last) + 1)
 
     def _get_password(self):
-        # TODO generate password with int self.difficulty, int self.length
-        # For help: ./password-manager.py generate --help
-        return "password"
+        password = ''
+        for i in range(0, self.length):
+            password += chr(choice(self.difficultyPool[self.difficulty]))
+        return password
 
 
 class PasswordWriter(Writer):
