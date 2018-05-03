@@ -40,7 +40,7 @@ class Writer(ABC, AccountHandler):
 
     def __write_file(self, file, tag, nonce, e_message):
         # print('Write\nsalt: '+salt+'\ntag: '+str(tag)+'\nnon: '+str(nonce)+'\nepass: '+str(e_pass))
-        with open('passwords/' + file, 'ab') as f:
+        with open('passwords/' + file, 'wb') as f:
             f.write(self.salt.encode())
             f.write('\n'.encode())
             # print((tag).decode('cp437'))
