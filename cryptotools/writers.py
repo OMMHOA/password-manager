@@ -57,8 +57,6 @@ class Writer(ABC, AccountHandler):
 
 
 class PasswordGenerator(Writer):
-    difficulty: int
-    length: int
 
     def __init__(self, domain, username, difficulty, length):
         super().__init__(domain, username)

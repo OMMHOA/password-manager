@@ -9,9 +9,6 @@ def generate_key(password, salt, iter):
 
 
 class AccountHandler:
-    domain: str
-    username: str
-    file: str
 
     def __init__(self, domain, username):
         self.domain = domain
