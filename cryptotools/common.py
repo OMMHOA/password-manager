@@ -4,7 +4,7 @@ from Crypto.Protocol.KDF import PBKDF2
 
 
 def generate_key(password, salt, iter):
-    key2 = binascii.hexlify(PBKDF2(password, salt))
+    key2 = binascii.hexlify(PBKDF2(password, salt,count=10000))
     return key2
 
 
