@@ -36,25 +36,17 @@ class PasswordReader(AccountHandler, Reader):
 
     def _read_file(self):
 
-
         with open('passwords/' + self.file, 'rb') as f:
-
-
-
-            salt=f.readline().rstrip()
+            salt = f.readline().rstrip()
             tag = f.readline().rstrip()
             nonce = f.readline().rstrip()
-            e_pass=f.readline()
+            e_pass = f.readline()
 
-            return salt,tag,nonce,e_pass
-
-
-
+            return salt, tag, nonce, e_pass
 
 
 class List(Reader):
     def read(self, m_pass):
-
         print('domain: username')
         for f in listdir('passwords'):
             [domain, username] = f.split('__', 1)

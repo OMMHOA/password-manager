@@ -93,4 +93,7 @@ def clear():
 
 class PasswordDeleter(AccountHandler):
     def delete(self):
-        os.remove('passwords/' + self.file)
+        try:
+            os.remove('passwords/' + self.file)
+        except FileNotFoundError:
+            print('Delete failed. Domain, username pair not found.')
