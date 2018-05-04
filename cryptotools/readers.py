@@ -19,7 +19,8 @@ class Reader(ABC):
             cipher.verify(tag)
             return plaintext
         except ValueError:
-            print("Key incorrect or message corrupted")
+            print("Password may corrupted")
+            return plaintext
 
 
 class PasswordReader(AccountHandler, Reader):
@@ -32,7 +33,7 @@ class PasswordReader(AccountHandler, Reader):
 
             print(message)
         except:
-            print("No domain or username!")
+            print("No domain or username for this master password!")
 
     def _read_file(self):
 
