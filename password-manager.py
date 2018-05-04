@@ -12,7 +12,7 @@ def add_account_info_to_parser(parser):
     parser.add_argument('username')
 
 
-parser = ArgumentParser(prog='Password Manager')
+parser = ArgumentParser(prog='Password Manager', epilog='If no arguments are defined, the program runs in shell mode.')
 subparsers = parser.add_subparsers()
 
 password_parser = subparsers.add_parser('add')
