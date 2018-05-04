@@ -24,21 +24,37 @@ class Reader(ABC):
 
 class PasswordReader(AccountHandler, Reader):
     def read(self, m_pass):
-        salt, tag, nonce, e_pass = self._read_file()
-        key = generate_key(m_pass, salt, tag)
+        try:
+            salt, tag, nonce, e_pass = self._read_file()
+            key = generate_key(m_pass, salt, tag)
 
-        message = self._decrypt(key, e_pass, nonce, tag)
+            message = self._decrypt(key, e_pass, nonce, tag)
 
-        print(message)
+            print(message)
+        except:
+            print("No domain or username!")
 
     def _read_file(self):
+
+
         with open('passwords/' + self.file, 'rb') as f:
-            lines = [line.rstrip() for line in f.readlines()]
-            return tuple(lines)
+
+
+
+            salt=f.readline().rstrip()
+            tag = f.readline().rstrip()
+            nonce = f.readline().rstrip()
+            e_pass=f.readline()
+
+            return salt,tag,nonce,e_pass
+
+
+
 
 
 class List(Reader):
     def read(self, m_pass):
+
         print('domain: username')
         for f in listdir('passwords'):
             [domain, username] = f.split('__', 1)
